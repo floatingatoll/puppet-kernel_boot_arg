@@ -8,13 +8,13 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
         'RedHat': {
             $kernel = 'ALL'
 
-            $title_value = $value ? {
-                ''      => $title,
-                default => "${title}=${value}",
-            }
-
             case $ensure {
                 'present': {
+                    $title_value = $value ? {
+                        ''      => $title,
+                        default => "${title}=${value}",
+                    }
+
                     exec {
                         $exec_title:
                             command => "grubby --update-kernel ${kernel} --args '${title_value}'",
@@ -23,10 +23,14 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
                     }
                 }
                 'absent': {
+                    if ($value != '') {
+                        fail("ensure ${ensure} may not be used with value parameter")
+                    }
+
                     exec {
                         $exec_title:
-                            command => "grubby --update-kernel ${kernel} --remove-args '${title_value}'",
-                            onlyif  => "grubby --info ${kernel} | grep args= | grep '[\" ]${title_value}[\" ]'",
+                            command => "grubby --update-kernel ${kernel} --remove-args '${title}'",
+                            onlyif  => "grubby --info ${kernel} | grep args= | grep '[\" ]${title}[=\" ]'",
                             path    => "/usr/sbin:/sbin:/usr/bin:/bin";
                     }
                 }
