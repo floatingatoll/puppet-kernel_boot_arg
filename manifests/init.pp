@@ -1,7 +1,7 @@
 # TODO: verify that present and absent work as expected
 # TODO: add debian support somehow
 
-class kernel_boot_arg ($ensure = 'present', $value = '') {
+define kernel_boot_arg ($ensure = 'present', $value = '') {
     $exec_title = "${kernel}_${title}"
 
     case $::osfamily {
