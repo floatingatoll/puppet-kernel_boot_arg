@@ -1,4 +1,3 @@
-# TODO: verify that present and absent work as expected
 # TODO: add debian support somehow
 
 define kernel_boot_arg ($ensure = 'present', $value = '') {
