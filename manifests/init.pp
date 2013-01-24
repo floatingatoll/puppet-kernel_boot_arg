@@ -7,6 +7,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
 
     $kernel = 'ALL'
     $exec_title = "${kernel}_${title}"
+    $exec_path = '/usr/sbin:/sbin:/usr/bin:/bin'
 
     case $::osfamily {
         'RedHat': {
@@ -21,7 +22,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
                         $exec_title:
                             command => "grubby --update-kernel ${kernel} --args '${title_value}'",
                             onlyif  => "grubby --info ${kernel} | grep args= | grep -v '[\" ]${title_value}[\" ]'",
-                            path    => "/usr/sbin:/sbin:/usr/bin:/bin";
+                            path    => $exec_path;
                     }
                 }
                 'absent': {
@@ -29,7 +30,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
                         $exec_title:
                             command => "grubby --update-kernel ${kernel} --remove-args '${title}'",
                             onlyif  => "grubby --info ${kernel} | grep args= | grep '[\" ]${title}[=\" ]'",
-                            path    => "/usr/sbin:/sbin:/usr/bin:/bin";
+                            path    => $exec_path;
                     }
                 }
             }
