@@ -9,15 +9,15 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
     $exec_title = "${kernel}_${title}"
     $exec_path = '/usr/sbin:/sbin:/usr/bin:/bin'
 
+    $title_value = $value ? {
+        ''      => $title,
+        default => "${title}=${value}",
+    }
+
     case $::osfamily {
         'RedHat': {
             case $ensure {
                 'present': {
-                    $title_value = $value ? {
-                        ''      => $title,
-                        default => "${title}=${value}",
-                    }
-
                     exec {
                         $exec_title:
                             command => "grubby --update-kernel ${kernel} --args '${title_value}'",
