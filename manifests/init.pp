@@ -6,6 +6,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
     }
 
     $kernel = 'ALL'
+
     $exec_title = "${kernel}_${title}"
     $exec_path = '/usr/sbin:/sbin:/usr/bin:/bin'
 
