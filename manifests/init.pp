@@ -1,12 +1,11 @@
 # TODO: add debian support somehow
 
 define kernel_boot_arg ($ensure = 'present', $value = '') {
+    $kernel = 'ALL'
     $exec_title = "${kernel}_${title}"
 
     case $::osfamily {
         'RedHat': {
-            $kernel = 'ALL'
-
             case $ensure {
                 'present': {
                     $title_value = $value ? {
