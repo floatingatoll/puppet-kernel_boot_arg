@@ -42,26 +42,31 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
             }
         }
         'Debian': {
-            fail("unimplemented ::osfamily ${::osfamily}")
-
             $debian_config_var = 'GRUB_CMDLINE_LINUX_DEFAULT'
             $debian_config_file = '/etc/sysconfig/grub'
 
             file {
-                "${boot_arg_path}/boot_arg.pl":
+                "${boot_arg_path}/kernel_boot_arg.pl":
                     ensure => present,
-                    before => Exec[$exec_title],
                     owner  => root,
                     group  => root,
                     mode   => '0755',
                     source => 'puppet:///modules/kernel/boot_arg.pl';
+                "${boot_arg_path}/kernel_boot_arg_modify.sh":
+                    ensure  => present,
+                    require => File["${boot_arg_path}/kernel_boot_arg.pl"],
+                    before  => Exec[$exec_title],
+                    owner   => root,
+                    group   => root,
+                    mode    => '0755',
+                    source  => 'puppet:///modules/kernel/boot_arg_modify.sh';
             }
 
             case $ensure {
                 'present': {
                     exec {
                         $exec_title:
-                            command => "${boot_arg_path}/boot_arg.pl ${debian_config_var} ADD ${title_value} < ${debian_config_file} > ...", # TODO
+                            command => "${boot_arg_path}/kernel_boot_arg_modify.sh ${debian_config_var} ADD ${title_value} ${debian_config_file}",
                             unless  => "${boot_arg_path}/boot_arg.pl ${debian_config_var} PRESENT ${title_value}",
                             path    => $exec_path;
                     }
@@ -69,7 +74,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
                 'absent': {
                     exec {
                         $exec_title:
-                            command => "${boot_arg_path}/boot_arg.pl ${debian_config_var} REMOVE ${title} < ${debian_config_file} > ...", # TODO
+                            command => "${boot_arg_path}/kernel_boot_arg_modify.sh ${debian_config_var} REMOVE ${title} ${debian_config_file}",
                             unless  => "${boot_arg_path}/boot_arg.pl ${debian_config_var} ABSENT ${title}",
                             path    => $exec_path;
                     }
