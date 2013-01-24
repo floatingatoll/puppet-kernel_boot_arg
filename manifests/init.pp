@@ -45,6 +45,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
             fail("unimplemented ::osfamily ${::osfamily}")
 
             $debian_config_var = 'GRUB_CMDLINE_LINUX_DEFAULT'
+            $debian_config_file = '/etc/sysconfig/grub'
 
             file {
                 "${boot_arg_path}/boot_arg.pl":
@@ -60,7 +61,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
                 'present': {
                     exec {
                         $exec_title:
-                            command => "${boot_arg_path}/boot_arg.pl ${debian_config_var} ADD ${title_value} < /etc/sysconfig/grub > ...", # TODO
+                            command => "${boot_arg_path}/boot_arg.pl ${debian_config_var} ADD ${title_value} < ${debian_config_file} > ...", # TODO
                             unless  => "${boot_arg_path}/boot_arg.pl ${debian_config_var} PRESENT ${title_value}",
                             path    => $exec_path;
                     }
@@ -68,7 +69,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
                 'absent': {
                     exec {
                         $exec_title:
-                            command => "${boot_arg_path}/boot_arg.pl ${debian_config_var} REMOVE ${title} < /etc/sysconfig/grub > ...", # TODO
+                            command => "${boot_arg_path}/boot_arg.pl ${debian_config_var} REMOVE ${title} < ${debian_config_file} > ...", # TODO
                             unless  => "${boot_arg_path}/boot_arg.pl ${debian_config_var} ABSENT ${title}",
                             path    => $exec_path;
                     }
