@@ -47,7 +47,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
             $debian_config_var = 'GRUB_CMDLINE_LINUX_DEFAULT'
 
             file {
-                $boot_arg_path:
+                "${boot_arg_path}/boot_arg.pl":
                     ensure => present,
                     before => Exec[$exec_title],
                     owner  => root,
