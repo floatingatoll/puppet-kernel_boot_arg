@@ -41,13 +41,35 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
         'Debian': {
             fail("unimplemented ::osfamily ${::osfamily}")
 
+            $debian_config_var = 'GRUB_CMDLINE_LINUX_DEFAULT'
+
             file {
                 $boot_arg_path:
                     ensure => present,
+                    before => Exec[$exec_title],
                     owner  => root,
                     group  => root,
                     mode   => '0755',
                     source => 'puppet:///modules/kernel/boot_arg.pl';
+            }
+
+            case $ensure {
+                'present': {
+                    exec {
+                        $exec_title:
+                            command => "${boot_arg_path}/boot_arg.pl ${debian_config_var} ADD ${title_value} < /etc/sysconfig/grub > ...", # TODO
+                            unless  => "${boot_arg_path}/boot_arg.pl ${debian_config_var} PRESENT ${title_value}",
+                            path    => $exec_path;
+                    }
+                }
+                'absent': {
+                    exec {
+                        $exec_title:
+                            command => "${boot_arg_path}/boot_arg.pl ${debian_config_var} REMOVE ${title} < /etc/sysconfig/grub > ...", # TODO
+                            unless  => "${boot_arg_path}/boot_arg.pl ${debian_config_var} ABSENT ${title}",
+                            path    => $exec_path;
+                    }
+                }
             }
         }
         default: {
