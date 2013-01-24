@@ -5,9 +5,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
         fail("ensure ${ensure} may not be used with value parameter")
     }
 
-    $kernel = 'ALL'
-
-    $exec_title = "${kernel}_${title}"
+    $exec_title = "kernel_bootarg_${title}"
     $exec_path = '/usr/sbin:/sbin:/usr/bin:/bin'
 
     $boot_arg_path = '/usr/local/bin'
@@ -19,20 +17,22 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
 
     case $::osfamily {
         'RedHat': {
+            $redhat_kernel = 'ALL'
+
             case $ensure {
                 'present': {
                     exec {
                         $exec_title:
-                            command => "grubby --update-kernel ${kernel} --args '${title_value}'",
-                            onlyif  => "grubby --info ${kernel} | grep args= | grep -v '[\" ]${title_value}[\" ]'",
+                            command => "grubby --update-kernel ${redhat_kernel} --args '${title_value}'",
+                            onlyif  => "grubby --info ${redhat_kernel} | grep args= | grep -v '[\" ]${title_value}[\" ]'",
                             path    => $exec_path;
                     }
                 }
                 'absent': {
                     exec {
                         $exec_title:
-                            command => "grubby --update-kernel ${kernel} --remove-args '${title}'",
-                            onlyif  => "grubby --info ${kernel} | grep args= | grep '[\" ]${title}[=\" ]'",
+                            command => "grubby --update-kernel ${redhat_kernel} --remove-args '${title}'",
+                            onlyif  => "grubby --info ${redhat_kernel} | grep args= | grep '[\" ]${title}[=\" ]'",
                             path    => $exec_path;
                     }
                 }
