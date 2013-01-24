@@ -36,6 +36,9 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
                             path    => $exec_path;
                     }
                 }
+                default: {
+                    fail("unsupported ensure ${ensure}")
+                }
             }
         }
         'Debian': {
@@ -69,6 +72,9 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
                             unless  => "${boot_arg_path}/boot_arg.pl ${debian_config_var} ABSENT ${title}",
                             path    => $exec_path;
                     }
+                }
+                default: {
+                    fail("unsupported ensure ${ensure}")
                 }
             }
         }
