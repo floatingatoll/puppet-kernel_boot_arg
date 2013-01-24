@@ -10,6 +10,8 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
     $exec_title = "${kernel}_${title}"
     $exec_path = '/usr/sbin:/sbin:/usr/bin:/bin'
 
+    $boot_arg_path = '/usr/local/bin'
+
     $title_value = $value ? {
         ''      => $title,
         default => "${title}=${value}",
@@ -34,6 +36,18 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
                             path    => $exec_path;
                     }
                 }
+            }
+        }
+        'Debian': {
+            fail("unimplemented ::osfamily ${::osfamily}")
+
+            file {
+                $boot_arg_path:
+                    ensure => present,
+                    owner  => root,
+                    group  => root,
+                    mode   => '0755',
+                    source => 'puppet:///modules/kernel/boot_arg.pl';
             }
         }
         default: {
