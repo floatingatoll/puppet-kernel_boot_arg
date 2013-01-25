@@ -20,3 +20,4 @@ Debian/Ubuntu users:
 
 General notes:
 - ensure => absent accepts only a parameter name, refusing to proceed if a value is provided.
+- Hiera is used to share defaults amongst the subclasses, see hiera/default.yaml.
