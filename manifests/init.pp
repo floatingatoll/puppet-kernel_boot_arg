@@ -1,5 +1,3 @@
-# TODO: add debian support somehow
-
 define kernel_boot_arg ($ensure = 'present', $value = '') {
     if ($ensure != 'present' and $value != '') {
         fail("ensure ${ensure} may not be used with value parameter")
