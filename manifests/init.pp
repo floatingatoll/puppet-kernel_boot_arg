@@ -44,37 +44,28 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
             $debian_config_file = '/etc/sysconfig/grub'
             $debian_grub_file = '/boot/grub/grub.cfg'
 
-            file {
-                "${boot_arg_path}/kernel_boot_arg.pl":
-                    ensure => present,
-                    owner  => root,
-                    group  => root,
-                    mode   => '0755',
-                    source => 'puppet:///modules/kernel/boot_arg.pl';
-                "${boot_arg_path}/kernel_boot_arg_modify.sh":
-                    ensure  => present,
-                    require => File["${boot_arg_path}/kernel_boot_arg.pl"],
-                    before  => Exec[$exec_title],
-                    owner   => root,
-                    group   => root,
-                    mode    => '0755',
-                    source  => 'puppet:///modules/kernel/boot_arg_modify.sh';
+            # TODO: move parameters into hiera
+            class {
+                'kernel_boot_arg::scripts':
+                    path => $boot_arg_path;
+                'kernel_boot_arg::update_grub':
+                    path        => $boot_arg_path,
+                    grub_file   => $debian_grub_file,
+                    config_file => $debian_config_file;
             }
 
-            exec {
-                'debian_update-grub':
-                    command   => "update-grub",
-                    onlyif    => "[ ( ! -e ${debian_grub_file} ) -o ( ${debian_grub_file} -ot ${debian_config_file} ) ]",
-                    path      => $exec_path,
-                    subscribe => Exec[$exec_title];
-            }
+            # We need the scripts to run the Exec below.
+            Class['kernel_boot_arg::scripts'] -> Exec[$exec_title]
+
+            # We need the Exec to run before the update_grub recipe checks the file timestamps.
+            Exec[$exec_title] -> Class['kernel_boot_arg::update_grub']
 
             case $ensure {
                 'present': {
                     exec {
                         $exec_title:
                             command => "${boot_arg_path}/kernel_boot_arg_modify.sh ${debian_config_var} ADD ${title_value} ${debian_config_file}",
-                            unless  => "${boot_arg_path}/boot_arg.pl ${debian_config_var} PRESENT ${title_value}",
+                            unless  => "${boot_arg_path}/kernel_boot_arg.pl ${debian_config_var} PRESENT ${title_value}",
                             path    => $exec_path;
                     }
                 }
@@ -82,7 +73,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
                     exec {
                         $exec_title:
                             command => "${boot_arg_path}/kernel_boot_arg_modify.sh ${debian_config_var} REMOVE ${title} ${debian_config_file}",
-                            unless  => "${boot_arg_path}/boot_arg.pl ${debian_config_var} ABSENT ${title}",
+                            unless  => "${boot_arg_path}/kernel_boot_arg.pl ${debian_config_var} ABSENT ${title}",
                             path    => $exec_path;
                     }
                 }
