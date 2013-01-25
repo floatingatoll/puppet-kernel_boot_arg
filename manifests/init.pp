@@ -44,6 +44,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
         'Debian': {
             $debian_config_var = 'GRUB_CMDLINE_LINUX_DEFAULT'
             $debian_config_file = '/etc/sysconfig/grub'
+            $debian_grub_file = '/boot/grub/grub.cfg'
 
             file {
                 "${boot_arg_path}/kernel_boot_arg.pl":
@@ -64,10 +65,10 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
 
             exec {
                 'debian_update-grub':
-                    command     => "update-grub",
-                    path        => $exec_path,
-                    subscribe   => Exec[$exec_title],
-                    refreshonly => true;
+                    command   => "update-grub",
+                    onlyif    => "[ ( ! -e ${debian_grub_file} ) -o ( ${debian_grub_file} -ot ${debian_config_file} ) ]",
+                    path      => $exec_path,
+                    subscribe => Exec[$exec_title];
             }
 
             case $ensure {
