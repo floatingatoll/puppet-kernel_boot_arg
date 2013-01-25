@@ -17,7 +17,7 @@ shift
 title_value="$1"
 shift
 config_file="$1"
-[[ -z "$1" ]]
+[[ -z "$config_file" ]]
 
 : Prepare the backup file.
 old="${config_file}.orig"
