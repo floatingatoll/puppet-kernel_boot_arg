@@ -1,6 +1,4 @@
-# TODO: move parameters into hiera
-
-class kernel_boot_arg::scripts ($path) {
+class kernel_boot_arg::scripts ($path = hiera('kernel_boot_arg_path')) {
     file {
         "${path}/kernel_boot_arg.pl":
             ensure => present,

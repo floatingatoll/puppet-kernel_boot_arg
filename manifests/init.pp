@@ -6,8 +6,6 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
     $exec_title = "kernel_bootarg_${title}"
     $exec_path = '/usr/sbin:/sbin:/usr/bin:/bin'
 
-    $boot_arg_path = '/usr/local/bin'
-
     $title_value = $value ? {
         ''      => $title,
         default => "${title}=${value}",
@@ -40,19 +38,16 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
             }
         }
         'Debian': {
-            $debian_config_var = 'GRUB_CMDLINE_LINUX_DEFAULT'
-            $debian_config_file = '/etc/sysconfig/grub'
-            $debian_grub_file = '/boot/grub/grub.cfg'
+            include kernel_boot_arg::scripts
+            include kernel_boot_arg::update_grub
 
-            # TODO: move parameters into hiera
+            $boot_arg_path = hiera('kernel_boot_arg_path')
             class {
                 'kernel_boot_arg::scripts':
-                    path => $boot_arg_path;
+            $debian_config_var = hiera('kernel_boot_arg_debian_config_var')
                 'kernel_boot_arg::update_grub':
                     path        => $boot_arg_path,
-                    grub_file   => $debian_grub_file,
-                    config_file => $debian_config_file;
-            }
+            $debian_config_file = hiera('kernel_boot_arg_debian_config_file')
 
             # We need the scripts to run the Exec below.
             Class['kernel_boot_arg::scripts'] -> Exec[$exec_title]
