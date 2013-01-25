@@ -17,6 +17,7 @@ Fedora/RHEL users:
 
 Debian/Ubuntu users:
 - update-grub will be run whenever /etc/default/grub is older than /boot/grub/grub.cfg.
+- Only one backup of /etc/default/grub is kept. Please test carefully before shipping site-wide.
 
 General notes:
 - ensure => absent accepts only a parameter name, refusing to proceed if a value is provided.
