@@ -62,6 +62,14 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
                     source  => 'puppet:///modules/kernel/boot_arg_modify.sh';
             }
 
+            exec {
+                'debian_update-grub':
+                    command     => "update-grub",
+                    path        => $exec_path,
+                    subscribe   => Exec[$exec_title],
+                    refreshonly => true;
+            }
+
             case $ensure {
                 'present': {
                     exec {
