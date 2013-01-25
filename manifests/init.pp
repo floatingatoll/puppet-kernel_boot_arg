@@ -60,7 +60,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
                     exec {
                         $exec_title:
                             command => "${boot_arg_path}/kernel_boot_arg_modify.sh ${boot_arg_path}/kernel_boot_arg.pl ${debian_config_var} ADD ${title_value} ${debian_config_file}",
-                            unless  => "${boot_arg_path}/kernel_boot_arg.pl ${debian_config_var} PRESENT ${title_value}",
+                            unless  => "${boot_arg_path}/kernel_boot_arg.pl ${debian_config_var} PRESENT ${title_value} < ${debian_config_file}",
                             path    => $exec_path;
                     }
                 }
@@ -68,7 +68,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
                     exec {
                         $exec_title:
                             command => "${boot_arg_path}/kernel_boot_arg_modify.sh ${boot_arg_path}/kernel_boot_arg.pl ${debian_config_var} REMOVE ${title} ${debian_config_file}",
-                            unless  => "${boot_arg_path}/kernel_boot_arg.pl ${debian_config_var} ABSENT ${title}",
+                            unless  => "${boot_arg_path}/kernel_boot_arg.pl ${debian_config_var} ABSENT ${title} < ${debian_config_file}",
                             path    => $exec_path;
                     }
                 }
