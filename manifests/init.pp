@@ -42,11 +42,7 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
             include kernel_boot_arg::update_grub
 
             $boot_arg_path = hiera('kernel_boot_arg_path')
-            class {
-                'kernel_boot_arg::scripts':
             $debian_config_var = hiera('kernel_boot_arg_debian_config_var')
-                'kernel_boot_arg::update_grub':
-                    path        => $boot_arg_path,
             $debian_config_file = hiera('kernel_boot_arg_debian_config_file')
 
             # We need the scripts to run the Exec below.
