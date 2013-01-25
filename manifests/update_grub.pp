@@ -2,7 +2,7 @@ class kernel_boot_arg::update_grub ($grub_file = hiera('kernel_boot_arg_debian_g
     exec {
         'kernel_boot_arg_update-grub':
             command   => "update-grub",
-            onlyif    => "[ ${debian_grub_file} -ot ${debian_config_file} ]",
+            onlyif    => "[ ! -e ${grub_file} ] || [ ${grub_file} -ot ${config_file} ]",
             path      => '/usr/sbin:/sbin:/usr/bin:/bin';
     }
 }
