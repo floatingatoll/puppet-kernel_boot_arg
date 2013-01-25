@@ -1,0 +1,5 @@
+---
+kernel_boot_arg_path: '/usr/local/bin'
+kernel_boot_arg_debian_config_var: 'GRUB_CMDLINE_LINUX_DEFAULT'
+kernel_boot_arg_debian_config_file: '/etc/default/grub'
+kernel_boot_arg_debian_grub_file: '/boot/grub/grub.cfg'
