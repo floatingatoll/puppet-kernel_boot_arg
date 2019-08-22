@@ -1,4 +1,4 @@
-class kernel_boot_arg::scripts ($path = hiera('kernel_boot_arg_path')) {
+class kernel_boot_arg::scripts ($path = lookup('kernel_boot_arg_path')) {
     file {
         "${path}/kernel_boot_arg.pl":
             ensure => present,
