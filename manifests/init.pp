@@ -1,4 +1,6 @@
-define kernel_boot_arg ($ensure = 'present', $value = '') {
+define kernel_boot_arg (Enum['present', 'absent'] $ensure = 'present',
+                        String $value = ''
+) {
     if ($ensure != 'present' and $value != '') {
         fail("ensure ${ensure} may not be used with value parameter")
     }
@@ -14,6 +16,11 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
     case $::osfamily {
         'RedHat': {
             $redhat_kernel = 'ALL'
+
+            # RHEL6 ships a buggy grubby that doesn't update all kernels, fixed in 7.0.15-3.el6.
+            if $::operatingsystemrelease =~ /^6/ {
+                include kernel_boot_arg::grubby
+            }
 
             case $ensure {
                 'present': {
@@ -41,9 +48,9 @@ define kernel_boot_arg ($ensure = 'present', $value = '') {
             include kernel_boot_arg::scripts
             include kernel_boot_arg::update_grub
 
-            $boot_arg_path = hiera('kernel_boot_arg_path')
-            $debian_config_var = hiera('kernel_boot_arg_debian_config_var')
-            $debian_config_file = hiera('kernel_boot_arg_debian_config_file')
+            $boot_arg_path = lookup('kernel_boot_arg_path')
+            $debian_config_var = lookup('kernel_boot_arg_debian_config_var')
+            $debian_config_file = lookup('kernel_boot_arg_debian_config_file')
 
             # We need the scripts to run the Exec below.
             Class['kernel_boot_arg::scripts'] -> Exec[$exec_title]
